@@ -27,6 +27,8 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  gap: 40px;
 }
 
 .dice-container {
@@ -46,4 +48,21 @@ main {
   font-weight: 700;
   color: #2b283a;
   cursor: pointer;
+}
+
+.roll-dice {
+  height: 50px;
+  width: 150px;
+  border: none;
+  border-radius: 6px;
+  background-color: #5035ff;
+  box-shadow: 0 3px 2px rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.roll-dice:active {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }

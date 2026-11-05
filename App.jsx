@@ -3,7 +3,10 @@ import Die from "./components/Die";
 
 export default function App() {
   function generateAllNewDice() {
-    return new Array(10).fill(0).map(() => Math.ceil(Math.random() * 6));
+    return new Array(10).fill(0).map(() => ({
+      value: Math.ceil(Math.random() * 6),
+      isHeld: false,
+    }));
   }
 
   const [dice, setDice] = useState(() => generateAllNewDice());
@@ -12,8 +15,8 @@ export default function App() {
     setDice(generateAllNewDice());
   }
 
-  const diceElements = dice.map((num, index) => (
-    <Die key={index} value={num} />
+  const diceElements = dice.map((dieObj, index) => (
+    <Die key={index} value={dieObj.value} />
   ));
 
   return (

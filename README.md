@@ -82,13 +82,14 @@ Open the local URL printed in the terminal (usually `http://localhost:5173`).
 ```
 Tenzies/
 ├── components/
-│   └── Die.jsx # A single die button
-├── App.jsx     # Main game component and logic
-├── index.jsx   # React entry point
-├── index.html  # HTML template
-├── index.css   # Global styles
-├── vite.config.js  # Vite configuration
-└── package.json    # Dependencies and scripts
+│   └── Die.jsx         # A single die button
+├── App.jsx             # Main game component and logic
+├── index.jsx           # React entry point
+├── index.html          # HTML template
+├── index.css           # Global styles
+├── vite.config.js      # Vite configuration
+├── .npmrc              # npm configuration
+└── package.json        # Dependencies and scripts
 ```
 
 ## Implementation Details

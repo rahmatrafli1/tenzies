@@ -20,8 +20,11 @@ A simple dice game built with React and Vite. Roll the dice, freeze the ones you
 - Held dice keep their value when you roll again
 - Win detection when all dice are held and show the same value
 - Confetti animation when you win
+- Timer that starts on your first roll or hold and stops when you win
+- Roll counter that shows how many times you rolled
+- Dice drawn with pips (dots) like real dice instead of numbers
 - "New Game" button to restart after winning
-- Accessible markup: ARIA labels, a live region for the win announcement, and automatic focus on the button after winning
+- Accessible markup: ARIA labels (including the value of each pip die), a live region for the win announcement, and automatic focus on the button after winning
 
 ## Tech Stack
 
@@ -67,25 +70,25 @@ Open the local URL printed in the terminal (usually `http://localhost:5173`).
 
 ## How to Play
 
-1. Click **Roll** to roll all the dice.
+1. Click **Roll** to roll all the dice. The timer starts on your first roll or hold.
 2. Click a die to **hold** it at its current value. Held dice turn green.
-3. Click **Roll** again. Only the dice you have not held change.
+3. Click **Roll** again. Only the dice you have not held change, and the roll counter goes up by one.
 4. Click a held die again to release it.
-5. Win by holding all 10 dice when they all show the same number.
-6. Click **New Game** to play again.
+5. Win by holding all 10 dice when they all show the same number. The timer stops.
+6. Click **New Game** to reset the dice, timer, and roll counter.
 
 ## Project Structure
 
 ```
 Tenzies/
 ├── components/
-│   └── Die.jsx        # A single die button
-├── App.jsx            # Main game component and logic
-├── index.jsx          # React entry point
-├── index.html         # HTML template
-├── index.css          # Global styles
-├── vite.config.js     # Vite configuration
-└── package.json       # Dependencies and scripts
+│   └── Die.jsx # A single die button
+├── App.jsx     # Main game component and logic
+├── index.jsx   # React entry point
+├── index.html  # HTML template
+├── index.css   # Global styles
+├── vite.config.js  # Vite configuration
+└── package.json    # Dependencies and scripts
 ```
 
 ## Implementation Details
@@ -107,6 +110,9 @@ Holds all of the game state and logic.
   ```
 
   It is initialized lazily with `useState(() => generateAllNewDice())`.
+  - `rolls` is the number of rolls in the current game.
+  - `seconds` is the elapsed time in seconds.
+  - `started` is `true` after the first roll or hold. The timer only runs while it is `true`.
 
 **Derived value**
 
@@ -114,31 +120,33 @@ Holds all of the game state and logic.
 
 **Functions**
 
-| Function               | Description                                                                               |
-| ---------------------- | ----------------------------------------------------------------------------------------- |
-| `generateAllNewDice()` | Creates 10 dice with random values (1–6), `isHeld: false`, and a unique `nanoid` ID       |
-| `rollDice()`           | If the game is won, starts a new game. Otherwise re-rolls only the dice that are not held |
-| `hold(id)`             | Toggles `isHeld` for the die with the given ID                                            |
+| Function               | Description                                                                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `generateAllNewDice()` | Creates 10 dice with random values (1–6), `isHeld: false`, and a unique `nanoid` ID                                                                           |
+| `rollDice()`           | If the game is won, starts a new game and resets `rolls`, `seconds`, and `started`. Otherwise increments `rolls` and re-rolls only the dice that are not held |
+| `hold(id)`             | Marks the game as started and toggles `isHeld` for the die with the given ID                                                                                  |
+| `formatTime(total)`    | Converts seconds into an `MM:SS` string                                                                                                                       |
 
 **Effects and refs**
 
 - `buttonRef` and `useEffect` move focus to the Roll/New Game button when `gameWon` becomes `true`, so keyboard users can start a new game right away.
 - `<Confetti />` renders only while `gameWon` is `true`.
+- A `useEffect` with `setInterval` increments `seconds` every second while `started` is `true` and `gameWon` is `false`. The interval is cleared on cleanup, so the timer stops when you win.
 
 ### `components/Die.jsx`
 
-A presentational component that renders one die as a `<button>`.
+A presentational component that renders one die as a `<button>`. The face is a 3×3 grid of `<span>` elements. The `PIP_LAYOUT` map decides which cells get a `.pip` dot for each value (1–6). The pips are `aria-hidden`, so screen readers use the button's `aria-label` instead.
 
 | Prop     | Type       | Description                                                              |
 | -------- | ---------- | ------------------------------------------------------------------------ |
-| `value`  | `number`   | The number shown on the die (1–6)                                        |
+| `value`  | `number`   | The value of the die (1–6), shown as pips                                |
 | `isHeld` | `boolean`  | Whether the die is frozen. Held dice have a green background (`#59E391`) |
 | `hold`   | `function` | Click handler that toggles the held state                                |
 
 ## Accessibility
 
 - Each die is a real `<button>` with `aria-pressed` reflecting its held state.
-- Each die has a descriptive `aria-label`, for example "Die with value 4, held".
+- Each die has a descriptive `aria-label`, for example "Die with value 4, held". The visual pips are hidden from assistive technology.
 - A visually hidden `aria-live="polite"` region announces the win message to screen readers.
 - Focus moves automatically to the action button when the game is won.
 

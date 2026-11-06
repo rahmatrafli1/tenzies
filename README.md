@@ -12,6 +12,7 @@ A simple dice game built with React and Vite. Roll the dice, freeze the ones you
 - [Project Structure](#project-structure)
 - [Implementation Details](#implementation-details)
 - [Accessibility](#accessibility)
+- [Credits](#credits)
 
 ## Features
 
@@ -111,9 +112,10 @@ Holds all of the game state and logic.
   ```
 
   It is initialized lazily with `useState(() => generateAllNewDice())`.
-  - `rolls` is the number of rolls in the current game.
-  - `seconds` is the elapsed time in seconds.
-  - `started` is `true` after the first roll or hold. The timer only runs while it is `true`.
+
+- `rolls` is the number of rolls in the current game.
+- `seconds` is the elapsed time in seconds.
+- `started` is `true` after the first roll or hold. The timer only runs while it is `true`.
 
 **Derived value**
 
@@ -148,7 +150,7 @@ A presentational component that renders one die as a `<button>`. The face is a 3
 
 - Each die is a real `<button>` with `aria-pressed` reflecting its held state.
 - Each die has a descriptive `aria-label`, for example "Die with value 4, held". The visual pips are hidden from assistive technology.
-- A visually hidden `aria-live="polite"` region announces the win message to screen readers.
+- A visually hidden `aria-live="polite"` region announces the win message, including your roll count and time, to screen readers.
 - Focus moves automatically to the action button when the game is won.
 
 ## Credits

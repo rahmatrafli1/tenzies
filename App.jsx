@@ -12,13 +12,20 @@ export default function App() {
   }
 
   const [dice, setDice] = useState(() => generateAllNewDice());
+  const gameWon =
+    dice.every((die) => die.isHeld) &&
+    dice.every((die) => die.value === dice[0].value);
 
   function rollDice() {
-    setDice((oldDice) =>
-      oldDice.map((die) =>
-        die.isHeld ? die : { ...die, value: Math.ceil(Math.random() * 6) },
-      ),
-    );
+    if (gameWon) {
+      setDice(generateAllNewDice());
+    } else {
+      setDice((oldDice) =>
+        oldDice.map((die) =>
+          die.isHeld ? die : { ...die, value: Math.ceil(Math.random() * 6) },
+        ),
+      );
+    }
   }
 
   function hold(id) {
@@ -47,7 +54,7 @@ export default function App() {
       </p>
       <div className="dice-container">{diceElements}</div>
       <button className="roll-dice" onClick={rollDice}>
-        Roll
+        {gameWon ? "New Game" : "Roll"}
       </button>
     </main>
   );

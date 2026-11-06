@@ -13,6 +13,9 @@ export default function App() {
   }
 
   const [dice, setDice] = useState(() => generateAllNewDice());
+  const [rolls, setRolls] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+  const [started, setStarted] = useState(false);
   const gameWon =
     dice.every((die) => die.isHeld) &&
     dice.every((die) => die.value === dice[0].value);
@@ -20,7 +23,12 @@ export default function App() {
   function rollDice() {
     if (gameWon) {
       setDice(generateAllNewDice());
+      setRolls(0);
+      setSeconds(0);
+      setStarted(false);
     } else {
+      setStarted(true);
+      setRolls((r) => r + 1);
       setDice((oldDice) =>
         oldDice.map((die) =>
           die.isHeld ? die : { ...die, value: Math.ceil(Math.random() * 6) },
@@ -30,6 +38,7 @@ export default function App() {
   }
 
   function hold(id) {
+    setStarted(true);
     setDice((oldDice) =>
       oldDice.map((die) =>
         die.id === id ? { ...die, isHeld: !die.isHeld } : die,
@@ -54,12 +63,27 @@ export default function App() {
     }
   }, [gameWon]);
 
+  useEffect(() => {
+    if (!started || gameWon) return;
+    const id = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, [started, gameWon]);
+
+  function formatTime(total) {
+    const m = String(Math.floor(total / 60)).padStart(2, "0");
+    const s = String(total % 60).padStart(2, "0");
+    return `${m}:${s}`;
+  }
+
   return (
     <main>
       {gameWon && <Confetti />}
       <div aria-live="polite" className="sr-only">
         {gameWon && (
-          <p>Congratulations! You won! Press "New Game" to start again.</p>
+          <p>
+            Congratulations! You won in {rolls} rolls and {formatTime(seconds)}!
+            Press "New Game" to start again.
+          </p>
         )}
       </div>
       <h1 className="title">Tenzies</h1>
@@ -67,6 +91,11 @@ export default function App() {
         Roll until all dice are the same. Click each die to freeze it at its
         current value between rolls.
       </p>
+      <div className="stats">
+        <span>Time: {formatTime(seconds)}</span>
+        <span>Rolls: {rolls}</span>
+      </div>
+
       <div className="dice-container">{diceElements}</div>
       <button ref={buttonRef} className="roll-dice" onClick={rollDice}>
         {gameWon ? "New Game" : "Roll"}
